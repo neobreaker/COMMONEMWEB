@@ -5,6 +5,7 @@
 #include "socket_port.h"
 #include "httpServer.h"
 #include "lib_mem.h"
+#include "webpage.h"
 
 static u8* tx_buffer;
 static u8* rx_buffer;
@@ -39,6 +40,8 @@ void task_tcpserver(void *p_arg)
         return ;  
     }
 
+	reg_httpServer_webContent((uint8_t *)"index.html", (uint8_t *)index_page); 
+	
 	while(1)
 	{
 		httpServer_run(&s, &port);

@@ -1,6 +1,7 @@
 #include "httpServer.h"
 #include "httpParser.h"
 #include "httpUtil.h"
+#include "lib_mem.h"
 #include <string.h>
 
 #ifndef DATA_BUF_SIZE
@@ -22,6 +23,8 @@ httpServer_webContent web_content[MAX_CONTENT_CALLBACK];
 
 static void http_process_handler(int s, st_http_request * p_http_request);
 static void send_http_response_header(int s, uint8_t content_type, uint32_t body_len, uint16_t http_status);
+static void send_http_response_body(int s, uint8_t * uri_name, uint8_t * buf, uint32_t start_addr, uint32_t file_len);
+static int8_t http_disconnect(int s);
 
 void httpServer_init(uint8_t * tx_buf, uint8_t * rx_buf)
 {
@@ -72,11 +75,12 @@ void httpServer_run(int* s, socket_port_t *port)
                             break;
                         }
                     }
-
-                    if(HTTPSock_Status[seqnum].file_len > 0) HTTPSock_Status[seqnum].sock_status = STATE_HTTP_RES_INPROC;
-                    else HTTPSock_Status[seqnum].sock_status = STATE_HTTP_RES_DONE; // Send the 'HTTP response' end
-                    */
-
+					*/
+                    if(HTTPSock_Status[s].file_len > 0) 
+						HTTPSock_Status[s].sock_status = STATE_HTTP_RES_INPROC;
+                    else 
+						HTTPSock_Status[s].sock_status = STATE_HTTP_RES_DONE; // Send the 'HTTP response' end
+                    
                     break;
 
                 case STATE_HTTP_RES_INPROC :
@@ -89,12 +93,12 @@ void httpServer_run(int* s, socket_port_t *port)
                     break;
 
                 case STATE_HTTP_RES_DONE :
-                    /*
+                    
                     // Socket file info structure re-initialize
-                    HTTPSock_Status[seqnum].file_len = 0;
-                    HTTPSock_Status[seqnum].file_offset = 0;
-                    HTTPSock_Status[seqnum].file_start = 0;
-                    HTTPSock_Status[seqnum].sock_status = STATE_HTTP_IDLE;
+                    HTTPSock_Status[s].file_len = 0;
+                    HTTPSock_Status[s].file_offset = 0;
+                    HTTPSock_Status[s].file_start = 0;
+                    HTTPSock_Status[s].sock_status = STATE_HTTP_IDLE;
 
 
                     http_disconnect(s);*/
@@ -112,6 +116,7 @@ void httpServer_run(int* s, socket_port_t *port)
             break;
 
         case SOCK_CLOSED:
+			//socket(s, Sn_MR_TCP, HTTP_SERVER_PORT, 0x00) == s);    /* Reinitialize the socket */
             break;
 
         case SOCK_INIT:
@@ -142,7 +147,6 @@ static void http_process_handler(int s, st_http_request * p_http_request)
     uint8_t uri_buf[MAX_URI_SIZE]= {0x00, };
 
     uint16_t http_status;
-    int8_t get_seqnum;
     uint8_t content_found;
 
     http_status = 0;
@@ -186,7 +190,7 @@ static void http_process_handler(int s, st_http_request * p_http_request)
                 {
                     content_found = 1; // Web content found in code flash memory
                     content_addr = (uint32_t)content_num;
-                    HTTPSock_Status[get_seqnum].storage_type = CODEFLASH;
+                    HTTPSock_Status[s].storage_type = CODEFLASH;
                 }
                 // Not CGI request, Web content in 'SD card' or 'Data flash' requested
                 else
@@ -212,7 +216,7 @@ static void http_process_handler(int s, st_http_request * p_http_request)
                 // Send HTTP body (content)
                 if(http_status == STATUS_OK)
                 {
-                    //send_http_response_body(s, uri_name, http_response, content_addr, file_len);
+                    send_http_response_body(s, uri_name, http_response, content_addr, file_len);
                 }
             }
             
@@ -296,6 +300,15 @@ static void send_http_response_header(int s, uint8_t content_type, uint32_t body
     }
 }
 
+static int8_t http_disconnect(int s)
+{
+    setSn_CR(sn,Sn_CR_DISCON);
+    /* wait to process the command... */
+    while(getSn_CR(sn));
+
+    return SOCK_OK;
+}
+
 uint8_t find_userReg_webContent(uint8_t * content_name, uint16_t * content_num, uint32_t * file_len)
 {
     uint16_t i;
@@ -312,5 +325,128 @@ uint8_t find_userReg_webContent(uint8_t * content_name, uint16_t * content_num, 
         }
     }
     return ret;
+}
+
+uint16_t read_userReg_webContent(uint16_t content_num, uint8_t * buf, uint32_t offset, uint16_t size)
+{
+    uint16_t ret = 0;
+    uint8_t * ptr;
+
+    if(content_num > total_content_cnt) return 0;
+
+    ptr = web_content[content_num].content;
+    if(offset) ptr += offset;
+
+    strncpy((char *)buf, (char *)ptr, size);
+    *(buf+size) = 0; // Insert '/0' for indicates the 'End of String' (null terminated)
+
+    ret = strlen((void *)buf);
+    return ret;
+}
+
+void reg_httpServer_webContent(uint8_t * content_name, uint8_t * content)
+{
+    uint16_t name_len;
+    uint32_t content_len;
+
+    if(content_name == NULL || content == NULL)
+    {
+        return;
+    }
+    else if(total_content_cnt >= MAX_CONTENT_CALLBACK)
+    {
+        return;
+    }
+
+    name_len = strlen((char *)content_name);
+    content_len = strlen((char *)content);
+
+    web_content[total_content_cnt].content_name = pvPortMalloc(name_len+1);
+    strcpy((char *)web_content[total_content_cnt].content_name, (const char *)content_name);
+    web_content[total_content_cnt].content_len = content_len;
+    web_content[total_content_cnt].content = content;
+
+    total_content_cnt++;
+}
+
+static void send_http_response_body(int s, uint8_t * uri_name, uint8_t * buf, uint32_t start_addr, uint32_t file_len)
+{
+    uint32_t send_len;
+
+    uint8_t flag_datasend_end = 0;
+
+
+    if(s == -1) return; // exception handling; invalid number
+
+    // Send the HTTP Response 'body'; requested file
+    if(!HTTPSock_Status[s].file_len) // ### Send HTTP response body: First part ###
+    {
+        if (file_len > DATA_BUF_SIZE - 1)
+        {
+            HTTPSock_Status[s].file_start = start_addr;
+            HTTPSock_Status[s].file_len = file_len;
+            send_len = DATA_BUF_SIZE - 1;
+
+            memset(HTTPSock_Status[s].file_name, 0x00, MAX_CONTENT_NAME_LEN);
+            strcpy((char *)HTTPSock_Status[s].file_name, (char *)uri_name);
+
+        }
+        else
+        {
+            // Send process end
+            send_len = file_len;
+        }
+    }
+    else // remained parts
+    {
+        send_len = HTTPSock_Status[s].file_len - HTTPSock_Status[s].file_offset;
+
+        if(send_len > DATA_BUF_SIZE - 1)
+        {
+            send_len = DATA_BUF_SIZE - 1;
+            //HTTPSock_Status[get_seqnum]->file_offset += send_len;
+        }
+        else
+        {
+            // Send process end
+            flag_datasend_end = 1;
+        }
+    }
+
+    /*****************************************************/
+    //HTTPSock_Status[get_seqnum]->storage_type == NONE
+    //HTTPSock_Status[get_seqnum]->storage_type == CODEFLASH
+    //HTTPSock_Status[get_seqnum]->storage_type == SDCARD
+    //HTTPSock_Status[get_seqnum]->storage_type == DATAFLASH
+    /*****************************************************/
+
+    if(HTTPSock_Status[s].storage_type == CODEFLASH)
+    {
+        if(HTTPSock_Status[s].file_len) start_addr = HTTPSock_Status[s].file_start;
+        read_userReg_webContent(start_addr, &buf[0], HTTPSock_Status[s].file_offset, send_len);
+    }
+    else
+    {
+        send_len = 0;
+    }
+    // Requested content send to HTTP client
+
+    if(send_len) 
+		send(s, (unsigned int *)buf, send_len, 0);
+    else 
+		flag_datasend_end = 1;
+
+    if(flag_datasend_end)
+    {
+        HTTPSock_Status[s].file_start = 0;
+        HTTPSock_Status[s].file_len = 0;
+        HTTPSock_Status[s].file_offset = 0;
+        flag_datasend_end = 0;
+    }
+    else
+    {
+        HTTPSock_Status[s].file_offset += send_len;
+    }
+
 }
 
