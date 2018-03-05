@@ -1,0 +1,125 @@
+#include "httpServer.h"
+#include "httpParser.h"
+#include "httpUtil.h"
+
+#ifndef DATA_BUF_SIZE
+#define DATA_BUF_SIZE       2048
+#endif
+
+static st_http_request * http_request;              /**< Pointer to received HTTP request */
+static st_http_request * parsed_http_request;       /**< Pointer to parsed HTTP request */
+static uint8_t * http_response;                     /**< Pointer to HTTP response */
+
+uint8_t * pHTTP_TX;
+uint8_t * pHTTP_RX;
+
+st_http_socket HTTPSock_Status[SOCK_NUM] = { {STATE_HTTP_IDLE, }, };
+
+void httpServer_init(uint8_t * tx_buf, uint8_t * rx_buf)
+{
+    // User's shared buffer
+    pHTTP_TX = tx_buf;
+    pHTTP_RX = rx_buf;
+}
+
+void httpServer_run(int* s, socket_port_t *port)
+{
+	int err;
+    uint16_t len;
+    uint32_t gettime = 0;
+	socklen_t addr_len;
+	struct sockaddr_in conn_addr;
+
+    http_request = (st_http_request *)pHTTP_RX;     // Structure of HTTP Request
+    parsed_http_request = (st_http_request *)pHTTP_TX;
+
+    /* HTTP Service Start */
+    switch(socket_status(*s))
+    {
+        case SOCK_ESTABLISHED:
+			
+            // HTTP Process states
+            switch(HTTPSock_Status[*s].sock_status)
+            {
+
+                case STATE_HTTP_IDLE :
+                    
+                        if (len > DATA_BUF_SIZE) len = DATA_BUF_SIZE;
+                        len = recvfrom(*s, (unsigned int *)http_request, 1024, 0, &conn_addr, &addr_len);
+						
+                        *(((uint8_t *)http_request) + len) = '\0';
+						/*
+                        parse_http_request(parsed_http_request, (uint8_t *)http_request);
+
+                        // HTTP 'response' handler; includes send_http_response_header / body function
+                        http_process_handler(s, parsed_http_request);
+
+                        gettime = get_httpServer_timecount();
+                        // Check the TX socket buffer for End of HTTP response sends
+                        while(getSn_TX_FSR(s) != (getSn_TXBUF_SIZE(s)*1024))
+                        {
+                            if((get_httpServer_timecount() - gettime) > 3)
+                            {
+
+                                break;
+                            }
+                        }
+
+                        if(HTTPSock_Status[seqnum].file_len > 0) HTTPSock_Status[seqnum].sock_status = STATE_HTTP_RES_INPROC;
+                        else HTTPSock_Status[seqnum].sock_status = STATE_HTTP_RES_DONE; // Send the 'HTTP response' end
+                        */
+                    
+                    break;
+
+                case STATE_HTTP_RES_INPROC :
+                    // Repeat: Send the remain parts of HTTP responses
+
+                    // Repeatedly send remaining data to client
+                    //send_http_response_body(s, 0, http_response, 0, 0);
+
+                    //if(HTTPSock_Status[seqnum].file_len == 0) HTTPSock_Status[seqnum].sock_status = STATE_HTTP_RES_DONE;
+                    break;
+
+                case STATE_HTTP_RES_DONE :
+					/*
+                    // Socket file info structure re-initialize
+                    HTTPSock_Status[seqnum].file_len = 0;
+                    HTTPSock_Status[seqnum].file_offset = 0;
+                    HTTPSock_Status[seqnum].file_start = 0;
+                    HTTPSock_Status[seqnum].sock_status = STATE_HTTP_IDLE;
+
+
+                    http_disconnect(s);*/
+                    break;
+
+                default :
+                    break;
+            }
+            
+            break;
+
+        case SOCK_CLOSE_WAIT:
+
+            //disconnect(s);
+            break;
+
+        case SOCK_CLOSED:
+            break;
+
+        case SOCK_INIT:
+            err = listen(*s, 1);  
+		    if (err < 0) 
+			{  
+		        return ;  
+		    }
+            break;
+
+        case SOCK_LISTEN:
+            break;
+
+        default :
+            break;
+
+    } // end of switch
+
+}
