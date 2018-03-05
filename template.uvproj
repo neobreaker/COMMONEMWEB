@@ -351,7 +351,7 @@
               <MiscControls></MiscControls>
               <Define></Define>
               <Undefine></Undefine>
-              <IncludePath>.\include;.\src\init;.\src\ccdebug\inlcude;.\src\libstm32\cmsis;.\src\libstm32\inc;.\src\ucosii\src;.\src\ucosii\port;.\src\task;.\src\HARDWARE\SRAM;.\src\HARDWARE\TIMER;.\src\HARDWARE\USART;.\src\HARDWARE\VS10XX;.\src\mem;.\src\collect\include;.\src\SYSTEM;.\src\SYSTEM\sys;.\src\SYSTEM\delay;.\src\HARDWARE\W5500;.\src\Internet\httpServer;.\src\Internet\PORT</IncludePath>
+              <IncludePath>.\include;.\src\init;.\src\ccdebug\inlcude;.\src\libstm32\cmsis;.\src\libstm32\inc;.\src\ucosii\src;.\src\ucosii\port;.\src\task;.\src\HARDWARE\SRAM;.\src\HARDWARE\TIMER;.\src\HARDWARE\USART;.\src\mem;.\src\collect\include;.\src\SYSTEM;.\src\SYSTEM\sys;.\src\SYSTEM\delay;.\src\HARDWARE\W5500;.\src\Internet\httpServer;.\src\Internet\PORT;.\src\webpage</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
