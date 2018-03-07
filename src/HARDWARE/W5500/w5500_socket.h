@@ -82,6 +82,8 @@ int recvfrom(int s, void *mem, u32 len, int flags, struct
 int listen(int s, int backlog);
 int connect(int s, const struct sockaddr *name, socklen_t namelen);
 u8 socket_status(int s);
+int8_t disconnect(int s);
+int8_t close(int s);
 
 u16_t htons(u16_t n);
 u16_t ntohs(u16_t n);

@@ -130,6 +130,29 @@ u8 socket_status(int s)
 	return getSn_SR(s);
 }
 
+int8_t disconnect(int s)
+{
+    setSn_CR(s, DISCON);
+
+    /* wait to process the command... */
+    //while(getSn_CR(sn));
+    s_socket_usage &= ~(1<<s);
+    return 0;
+}
+
+int8_t close(int s)
+{
+	disconnect(s);
+    
+	setSn_CR(s, CLOSE);
+    /* wait to process the command... */
+	//while( getSn_CR(sn) );
+	/* clear all interrupt of the socket. */
+	//setSn_IR(sn, 0xFF);
+	//while(getSn_SR(sn) != SOCK_CLOSED);
+	return 0;
+}
+
 /**
  * Convert an u16_t from host- to network byte order.
  *

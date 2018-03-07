@@ -249,6 +249,8 @@ int Write_SOCK_Data_Buffer(SOCKET s, unsigned char *dat_ptr, unsigned short size
 unsigned short Read_SOCK_Data_Buffer(SOCKET s, unsigned char *dat_ptr, u32* remote_ip, u16* remote_port);
 
 u8 getSn_SR(int s);
+uint16_t getSn_RX_RSR(uint8_t s);
+u8 setSn_CR(int s, u8 dat);
 
 void W5500_Interrupt_Process(void);
 #endif

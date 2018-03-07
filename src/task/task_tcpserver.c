@@ -12,18 +12,18 @@ static u8* rx_buffer;
 
 void task_tcpserver(void *p_arg)
 {
-	int s;
-	int err;
-	socket_port_t port;
+	int s = -1;
+//	int err;
+	socket_port_t cfg;
 	struct sockaddr_in server_addr;
 
 	tx_buffer = pvPortMalloc(1024);
 	rx_buffer = pvPortMalloc(1024);
 	
-	socket_port_init(&port);
+	socket_port_init(&cfg);
 
 	httpServer_init(tx_buffer, rx_buffer);
-
+/*
 	s = socket(AF_INET, SOCK_STREAM, 0);
 	if (s == -1) 
 	{  
@@ -39,12 +39,12 @@ void task_tcpserver(void *p_arg)
 	{  
         return ;  
     }
-
+*/
 	reg_httpServer_webContent((uint8_t *)"index.html", (uint8_t *)index_page); 
 	
 	while(1)
 	{
-		httpServer_run(&s, &port);
+		httpServer_run(&s, &cfg);
 	}
 }
 
