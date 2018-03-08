@@ -1,16 +1,19 @@
 #include "socket_port.h"
 
-
-int socket_port_init(socket_port_t *port)
+int socket_cfg_init(socket_cfg_t *cfg)
 {
-	port->socket = socket;
-	port->bind = bind;
-	port->listen = listen;
-	port->connect = connect;
-	port->sendto = sendto;
-	port->send =send;
-	port->recvfrom = recvfrom;
-	port->socket_status = socket_status;
+	cfg->socket = socket;
+	cfg->bind = bind;
+	cfg->listen = listen;
+	cfg->connect = connect;
+	cfg->sendto = sendto;
+	cfg->send =send;
+	cfg->recvfrom = recvfrom;
+	cfg->socket_status = socket_status;
+    cfg->disconnect = disconnect;
+    cfg->close = close;
+    cfg->malloc = pvPortMalloc;
+    cfg->free = vPortFree;
 	return 0;
 }
 

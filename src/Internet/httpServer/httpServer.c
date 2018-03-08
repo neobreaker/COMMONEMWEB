@@ -1,7 +1,6 @@
 #include "httpServer.h"
 #include "httpParser.h"
 #include "httpUtil.h"
-#include "lib_mem.h"
 #include <string.h>
 
 #ifndef DATA_BUF_SIZE
@@ -21,9 +20,9 @@ uint8_t* pHTTP_RX;
 st_http_socket HTTPSock_Status[SOCK_NUM] = { {STATE_HTTP_IDLE, }, };
 httpServer_webContent web_content[MAX_CONTENT_CALLBACK];
 
-static void http_process_handler ( int s, st_http_request* p_http_request );
-static void send_http_response_header ( int s, uint8_t content_type, uint32_t body_len, uint16_t http_status );
-static void send_http_response_body ( int s, uint8_t* uri_name, uint8_t* buf, uint32_t start_addr, uint32_t file_len );
+static void http_process_handler ( int s, socket_cfg_t* cfg, st_http_request* p_http_request );
+static void send_http_response_header ( int s, socket_cfg_t* cfg, uint8_t content_type, uint32_t body_len, uint16_t http_status );
+static void send_http_response_body ( int s, socket_cfg_t* cfg, uint8_t* uri_name, uint8_t* buf, uint32_t start_addr, uint32_t file_len );
 
 void httpServer_init ( uint8_t* tx_buf, uint8_t* rx_buf )
 {
@@ -32,7 +31,7 @@ void httpServer_init ( uint8_t* tx_buf, uint8_t* rx_buf )
 	pHTTP_RX = rx_buf;
 }
 
-void httpServer_run ( int* s, socket_port_t* cfg )
+void httpServer_run ( int* s, socket_cfg_t* cfg )
 {
 	int err;
 	uint16_t len;
@@ -44,7 +43,7 @@ void httpServer_run ( int* s, socket_port_t* cfg )
 	parsed_http_request = ( st_http_request* ) pHTTP_TX;
 
 	/* HTTP Service Start */
-	switch ( socket_status ( *s ) )
+	switch ( cfg->socket_status ( *s ) )
 	{
 		case SOCK_ESTABLISHED:
 
@@ -53,7 +52,7 @@ void httpServer_run ( int* s, socket_port_t* cfg )
 			{
 
 				case STATE_HTTP_IDLE :
-					len = recvfrom ( *s, ( unsigned int* ) http_request, 1024, 0, &conn_addr, &addr_len );
+					len = cfg->recvfrom ( *s, ( unsigned int* ) http_request, 1024, 0, &conn_addr, &addr_len );
                     if ( len > DATA_BUF_SIZE )
 					{
 						len = DATA_BUF_SIZE;
@@ -64,7 +63,7 @@ void httpServer_run ( int* s, socket_port_t* cfg )
 					parse_http_request ( parsed_http_request, ( uint8_t* ) http_request );
 
 					// HTTP 'response' handler; includes send_http_response_header / body function
-					http_process_handler ( *s, parsed_http_request );
+					http_process_handler ( *s, cfg, parsed_http_request );
 
 					if ( HTTPSock_Status[*s].file_len > 0 )
 					{
@@ -81,7 +80,7 @@ void httpServer_run ( int* s, socket_port_t* cfg )
 					// Repeat: Send the remain parts of HTTP responses
 
 					// Repeatedly send remaining data to client
-					send_http_response_body ( *s, 0, http_response, 0, 0 );
+					send_http_response_body ( *s, cfg, 0, http_response, 0, 0 );
 
 					if ( HTTPSock_Status[*s].file_len == 0 )
 					{
@@ -98,7 +97,7 @@ void httpServer_run ( int* s, socket_port_t* cfg )
 					HTTPSock_Status[*s].sock_status = STATE_HTTP_IDLE;
 
 
-					disconnect ( *s );
+					cfg->disconnect ( *s );
 					break;
 
 				default :
@@ -109,12 +108,12 @@ void httpServer_run ( int* s, socket_port_t* cfg )
 
 		case SOCK_CLOSE_WAIT:
 
-			close ( *s );
+			cfg->close ( *s );
 			break;
 
 		case SOCK_CLOSED:
 			//socket(s, Sn_MR_TCP, HTTP_SERVER_PORT, 0x00) == s);    /* Reinitialize the socket */
-			*s = socket ( AF_INET, SOCK_STREAM, 0 );
+			*s = cfg->socket ( AF_INET, SOCK_STREAM, 0 );
 			if ( *s == -1 )
 			{
 				return ;
@@ -123,7 +122,7 @@ void httpServer_run ( int* s, socket_port_t* cfg )
 			server_addr.sin_addr.s_addr =htonl ( INADDR_ANY );
 			server_addr.sin_port = 80;
 
-			err = bind ( *s,  &server_addr, sizeof ( server_addr ) );
+			err = cfg->bind ( *s,  &server_addr, sizeof ( server_addr ) );
 			if ( err < 0 )
 			{
 				return ;
@@ -132,7 +131,7 @@ void httpServer_run ( int* s, socket_port_t* cfg )
 			break;
 
 		case SOCK_INIT:
-			err = listen ( *s, 1 );
+			err = cfg->listen ( *s, 1 );
 			if ( err < 0 )
 			{
 				return ;
@@ -149,7 +148,7 @@ void httpServer_run ( int* s, socket_port_t* cfg )
 
 }
 
-static void http_process_handler ( int s, st_http_request* p_http_request )
+static void http_process_handler ( int s, socket_cfg_t* cfg, st_http_request* p_http_request )
 {
 	uint8_t* uri_name;
 	uint32_t content_addr = 0;
@@ -170,7 +169,7 @@ static void http_process_handler ( int s, st_http_request* p_http_request )
 	{
 		case METHOD_ERR :
 			http_status = STATUS_BAD_REQ;
-			send_http_response_header ( s, 0, 0, http_status );
+			send_http_response_header ( s, cfg, 0, 0, http_status );
 			break;
 
 		case METHOD_HEAD :
@@ -202,7 +201,7 @@ static void http_process_handler ( int s, st_http_request* p_http_request )
 				}
 				else
 				{
-					send_http_response_header ( s, PTYPE_CGI, 0, STATUS_NOT_FOUND );
+					send_http_response_header ( s, cfg, PTYPE_CGI, 0, STATUS_NOT_FOUND );
 				}
 			}
 			else
@@ -232,13 +231,13 @@ static void http_process_handler ( int s, st_http_request* p_http_request )
 				// Send HTTP header
 				if ( http_status )
 				{
-					send_http_response_header ( s, p_http_request->TYPE, file_len, http_status );
+					send_http_response_header ( s, cfg, p_http_request->TYPE, file_len, http_status );
 				}
 
 				// Send HTTP body (content)
 				if ( http_status == STATUS_OK )
 				{
-					send_http_response_body ( s, uri_name, http_response, content_addr, file_len );
+					send_http_response_body ( s, cfg, uri_name, http_response, content_addr, file_len );
 				}
 			}
 
@@ -282,7 +281,7 @@ static void http_process_handler ( int s, st_http_request* p_http_request )
 
 		default :
 			http_status = STATUS_BAD_REQ;
-			send_http_response_header ( s, 0, 0, http_status );
+			send_http_response_header ( s, cfg, 0, 0, http_status );
 			break;
 	}
 }
@@ -290,7 +289,7 @@ static void http_process_handler ( int s, st_http_request* p_http_request )
 ////////////////////////////////////////////
 // Private Functions
 ////////////////////////////////////////////
-static void send_http_response_header ( int s, uint8_t content_type, uint32_t body_len, uint16_t http_status )
+static void send_http_response_header ( int s, socket_cfg_t* cfg, uint8_t content_type, uint32_t body_len, uint16_t http_status )
 {
 	switch ( http_status )
 	{
@@ -318,7 +317,7 @@ static void send_http_response_header ( int s, uint8_t content_type, uint32_t bo
 	// Send the HTTP Response 'header'
 	if ( http_status )
 	{
-		send ( s, ( unsigned int* ) http_response, strlen ( ( char* ) http_response ), 0 );
+		cfg->send ( s, ( unsigned int* ) http_response, strlen ( ( char* ) http_response ), 0 );
 	}
 }
 
@@ -364,7 +363,7 @@ uint16_t read_userReg_webContent ( uint16_t content_num, uint8_t* buf, uint32_t 
 	return ret;
 }
 
-void reg_httpServer_webContent ( uint8_t* content_name, uint8_t* content )
+void reg_httpServer_webContent ( uint8_t* content_name, uint8_t* content ,socket_cfg_t* cfg )
 {
 	uint16_t name_len;
 	uint32_t content_len;
@@ -381,7 +380,7 @@ void reg_httpServer_webContent ( uint8_t* content_name, uint8_t* content )
 	name_len = strlen ( ( char* ) content_name );
 	content_len = strlen ( ( char* ) content );
 
-	web_content[total_content_cnt].content_name = pvPortMalloc ( name_len+1 );
+	web_content[total_content_cnt].content_name = cfg->malloc ( name_len+1 );
 	strcpy ( ( char* ) web_content[total_content_cnt].content_name, ( const char* ) content_name );
 	web_content[total_content_cnt].content_len = content_len;
 	web_content[total_content_cnt].content = content;
@@ -389,7 +388,7 @@ void reg_httpServer_webContent ( uint8_t* content_name, uint8_t* content )
 	total_content_cnt++;
 }
 
-static void send_http_response_body ( int s, uint8_t* uri_name, uint8_t* buf, uint32_t start_addr, uint32_t file_len )
+static void send_http_response_body ( int s, socket_cfg_t* cfg, uint8_t* uri_name, uint8_t* buf, uint32_t start_addr, uint32_t file_len )
 {
 	uint32_t send_len;
 
@@ -459,7 +458,7 @@ static void send_http_response_body ( int s, uint8_t* uri_name, uint8_t* buf, ui
 
 	if ( send_len )
 	{
-		send ( s, ( unsigned int* ) buf, send_len, 0 );
+		cfg->send ( s, ( unsigned int* ) buf, send_len, 0 );
 	}
 	else
 	{

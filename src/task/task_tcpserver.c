@@ -13,34 +13,17 @@ static u8* rx_buffer;
 void task_tcpserver(void *p_arg)
 {
 	int s = -1;
-//	int err;
-	socket_port_t cfg;
-	struct sockaddr_in server_addr;
+    
+	socket_cfg_t cfg;
 
 	tx_buffer = pvPortMalloc(1024);
 	rx_buffer = pvPortMalloc(1024);
 	
-	socket_port_init(&cfg);
+	socket_cfg_init(&cfg);
 
 	httpServer_init(tx_buffer, rx_buffer);
-/*
-	s = socket(AF_INET, SOCK_STREAM, 0);
-	if (s == -1) 
-	{  
-        return ;
-    }
 
-	server_addr.sin_family = AF_INET;  
-    server_addr.sin_addr.s_addr =htonl(INADDR_ANY);  
-    server_addr.sin_port = 80;
-
-	err = bind(s,  &server_addr, sizeof(server_addr));  
-    if (err < 0) 
-	{  
-        return ;  
-    }
-*/
-	reg_httpServer_webContent((uint8_t *)"index.html", (uint8_t *)index_page); 
+	reg_httpServer_webContent((uint8_t *)"index.html", (uint8_t *)index_page, &cfg); 
 	
 	while(1)
 	{
