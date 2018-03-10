@@ -110,7 +110,7 @@ int recvfrom(int s, void *mem, u32 len, int flags, struct sockaddr_in *from, soc
     u8 err;
     rcv_pack_t *mail = NULL;
 
-    mail = OSMboxPend(mbox_sock_rcv[s], 0, &err);
+    mail = OSMboxPend(mbox_sock_rcv[s], 600, &err);
 
     if(err == OS_ERR_NONE)
     {

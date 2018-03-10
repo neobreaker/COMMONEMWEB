@@ -2,6 +2,7 @@
 #include "httpParser.h"
 #include "httpUtil.h"
 #include <string.h>
+#include <stdio.h>
 
 #ifndef DATA_BUF_SIZE
 #define DATA_BUF_SIZE       2048
@@ -23,6 +24,7 @@ httpServer_webContent web_content[MAX_CONTENT_CALLBACK];
 static void http_process_handler ( int s, socket_cfg_t* cfg, st_http_request* p_http_request );
 static void send_http_response_header ( int s, socket_cfg_t* cfg, uint8_t content_type, uint32_t body_len, uint16_t http_status );
 static void send_http_response_body ( int s, socket_cfg_t* cfg, uint8_t* uri_name, uint8_t* buf, uint32_t start_addr, uint32_t file_len );
+static void send_http_response_cgi(uint8_t s, socket_cfg_t* cfg, uint8_t * buf, uint8_t * http_body, uint16_t file_len);
 
 void httpServer_init ( uint8_t* tx_buf, uint8_t* rx_buf )
 {
@@ -53,7 +55,11 @@ void httpServer_run ( int* s, socket_cfg_t* cfg )
 
 				case STATE_HTTP_IDLE :
 					len = cfg->recvfrom ( *s, ( unsigned int* ) http_request, 1024, 0, &conn_addr, &addr_len );
-                    if ( len > DATA_BUF_SIZE )
+					if ( len == 0 )
+					{
+						return;
+					}
+					else if ( len > DATA_BUF_SIZE )
 					{
 						len = DATA_BUF_SIZE;
 					}
@@ -244,39 +250,34 @@ static void http_process_handler ( int s, socket_cfg_t* cfg, st_http_request* p_
 			break;
 
 		case METHOD_POST :
-			/*
-			mid((char *)p_http_request->URI, "/", " HTTP", (char *)uri_buf);
+
+			mid ( ( char* ) p_http_request->URI, "/", " HTTP", ( char* ) uri_buf );
 			uri_name = uri_buf;
-			find_http_uri_type(&p_http_request->TYPE, uri_name);    // Check file type (HTML, TEXT, GIF, JPEG are included)
+			find_http_uri_type ( &p_http_request->TYPE, uri_name ); // Check file type (HTML, TEXT, GIF, JPEG are included)
 
-			#ifdef _HTTPSERVER_DEBUG_
-			printf("\r\n> HTTPSocket[%d] : HTTP Method POST\r\n", s);
-			printf("> HTTPSocket[%d] : Request URI = %s ", s, uri_name);
-			printf("Type = %d\r\n", p_http_request->TYPE);
-			#endif
-
-			if(p_http_request->TYPE == PTYPE_CGI)   // HTTP POST Method; CGI Process
+			if ( p_http_request->TYPE == PTYPE_CGI ) // HTTP POST Method; CGI Process
 			{
-			    content_found = http_post_cgi_handler(uri_name, p_http_request, http_response, &file_len);
-			#ifdef _HTTPSERVER_DEBUG_
-			    printf("> HTTPSocket[%d] : [CGI: %s] / Response len [ %ld ]byte\r\n", s, content_found?"Content found":"Content not found", file_len);
-			#endif
-			    if(content_found && (file_len <= (DATA_BUF_SIZE-(strlen(RES_CGIHEAD_OK)+8))))
-			    {
-			        send_http_response_cgi(s, pHTTP_TX, http_response, (uint16_t)file_len);
+				content_found = http_post_cgi_handler ( uri_name, p_http_request, http_response, &file_len );
 
-			        // Reset the H/W for apply to the change configuration information
-			        if(content_found == HTTP_RESET) HTTPServer_ReStart();
-			    }
-			    else
-			    {
-			        send_http_response_header(s, PTYPE_CGI, 0, STATUS_NOT_FOUND);
-			    }
+				if ( content_found && ( file_len <= ( DATA_BUF_SIZE- ( strlen ( RES_CGIHEAD_OK )+8 ) ) ) )
+				{
+					send_http_response_cgi ( s, cfg, pHTTP_TX, http_response, ( uint16_t ) file_len );
+
+					// Reset the H/W for apply to the change configuration information
+					if ( content_found == HTTP_RESET )
+					{
+						//HTTPServer_ReStart();
+					}
+				}
+				else
+				{
+					send_http_response_header ( s, cfg, PTYPE_CGI, 0, STATUS_NOT_FOUND );
+				}
 			}
 			else    // HTTP POST Method; Content not found
 			{
-			    send_http_response_header(s, 0, 0, STATUS_NOT_FOUND);
-			}*/
+				send_http_response_header ( s, cfg, 0, 0, STATUS_NOT_FOUND );
+			}
 			break;
 
 		default :
@@ -363,7 +364,7 @@ uint16_t read_userReg_webContent ( uint16_t content_num, uint8_t* buf, uint32_t 
 	return ret;
 }
 
-void reg_httpServer_webContent ( uint8_t* content_name, uint8_t* content ,socket_cfg_t* cfg )
+void reg_httpServer_webContent ( uint8_t* content_name, uint8_t* content,socket_cfg_t* cfg )
 {
 	uint16_t name_len;
 	uint32_t content_len;
@@ -477,5 +478,14 @@ static void send_http_response_body ( int s, socket_cfg_t* cfg, uint8_t* uri_nam
 		HTTPSock_Status[s].file_offset += send_len;
 	}
 
+}
+
+static void send_http_response_cgi(uint8_t s, socket_cfg_t* cfg, uint8_t * buf, uint8_t * http_body, uint16_t file_len)
+{
+	uint16_t send_len = 0;
+
+	send_len = sprintf((char *)buf, "%s%d\r\n\r\n%s", RES_CGIHEAD_OK, file_len, http_body);
+
+	cfg->send(s, buf, send_len, 0);
 }
 

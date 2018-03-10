@@ -10,24 +10,32 @@
 static u8* tx_buffer;
 static u8* rx_buffer;
 
-void task_tcpserver(void *p_arg)
+void task_tcpserver ( void* p_arg )
 {
 	int s = -1;
-    
+
 	socket_cfg_t cfg;
 
-	tx_buffer = pvPortMalloc(1024);
-	rx_buffer = pvPortMalloc(1024);
-	
-	socket_cfg_init(&cfg);
+	tx_buffer = pvPortMalloc ( 1024 );
+	rx_buffer = pvPortMalloc ( 1024 );
 
-	httpServer_init(tx_buffer, rx_buffer);
+	socket_cfg_init ( &cfg );
 
-	reg_httpServer_webContent((uint8_t *)"index.html", (uint8_t *)index_page, &cfg); 
-	
-	while(1)
+	httpServer_init ( tx_buffer, rx_buffer );
+
+	reg_httpServer_webContent ( ( uint8_t* ) "index.html", ( uint8_t* ) index_page, &cfg );
+
+	// Example #1
+	reg_httpServer_webContent ( ( uint8_t* ) "dio.html", ( uint8_t* ) dio_page,&cfg );				// dio.html 		: Digital I/O control example page
+	reg_httpServer_webContent ( ( uint8_t* ) "dio.js", ( uint8_t* ) wiz550web_dio_js,&cfg );			// dio.js 			: JavaScript for digital I/O control 	(+ ajax.js)
+
+	// AJAX JavaScript functions
+	reg_httpServer_webContent ( ( uint8_t* ) "ajax.js", ( uint8_t* ) wiz550web_ajax_js,&cfg );			// ajax.js			: JavaScript for AJAX request transfer
+
+
+	while ( 1 )
 	{
-		httpServer_run(&s, &cfg);
+		httpServer_run ( &s, &cfg );
 	}
 }
 
@@ -72,39 +80,39 @@ void task_tcpserver(void *p_arg)
 void task_tcpserver(void *p_arg)
 {
 	int err;
-	struct sockaddr_in server_addr;  
+	struct sockaddr_in server_addr;
     struct sockaddr_in conn_addr;
-	int sock_fd;                
-	
+	int sock_fd;
+
 	socklen_t addr_len;
 	int length;
 
 	sock_fd = socket(AF_INET, SOCK_STREAM, 0);
-    if (sock_fd == -1) 
-	{  
+    if (sock_fd == -1)
+	{
         return ;
     }
 
-	server_addr.sin_family = AF_INET;  
-    server_addr.sin_addr.s_addr =htonl(INADDR_ANY);  
+	server_addr.sin_family = AF_INET;
+    server_addr.sin_addr.s_addr =htonl(INADDR_ANY);
     server_addr.sin_port = 80;
 
-	err = bind(sock_fd,  &server_addr, sizeof(server_addr));  
-    if (err < 0) 
-	{  
-        return ;  
+	err = bind(sock_fd,  &server_addr, sizeof(server_addr));
+    if (err < 0)
+	{
+        return ;
     }
 
-	err = listen(sock_fd, 1);  
-    if (err < 0) {  
-        return ;  
+	err = listen(sock_fd, 1);
+    if (err < 0) {
+        return ;
     }
 
 	//sock_conn = accept(sock_fd, (struct sockaddr *)&conn_addr, &addr_len);
-	
+
 	while(1)
 	{
-		
+
 		length = recvfrom(sock_fd, (unsigned int *)data_buffer, 1024, 0, &conn_addr, &addr_len);
 		send(sock_fd, (unsigned int *)data_buffer, length, 0);
 	}
