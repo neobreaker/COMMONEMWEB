@@ -782,6 +782,11 @@
               <FileType>1</FileType>
               <FilePath>.\src\Internet\httpServer\httpUtil.c</FilePath>
             </File>
+            <File>
+              <FileName>userhandler.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\Internet\httpServer\userhandler.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

@@ -1158,7 +1158,7 @@ I (G:\github\COMMONEMWEB\src\HARDWARE\W5500\w5500_cfg.h)(0x5A9E64A9)
 I (G:\github\COMMONEMWEB\src\mem\lib_mem.h)(0x5A9E64A9)
 I (d:\Keil\ARM\ARMCC\include\stdlib.h)(0x51C7B744)
 I (d:\Keil\ARM\ARMCC\include\string.h)(0x51C7B744)
-F (.\src\task\task_tcpserver.c)(0x5AA1ECA6)(-c --cpu Cortex-M3 -g -O0 --apcs=interwork -I.\include -I.\src\init -I.\src\ccdebug\inlcude -I.\src\libstm32\cmsis -I.\src\libstm32\inc -I.\src\ucosii\src -I.\src\ucosii\port -I.\src\task -I.\src\HARDWARE\SRAM -I.\src\HARDWARE\TIMER -I.\src\HARDWARE\USART -I.\src\mem -I.\src\collect\include -I.\src\SYSTEM -I.\src\SYSTEM\sys -I.\src\SYSTEM\delay -I.\src\HARDWARE\W5500 -I.\src\Internet\httpServer -I.\src\Internet\PORT -I.\src\webpage-I d:\Keil\ARM\RV31\INC-I d:\Keil\ARM\CMSIS\Include-I d:\Keil\ARM\Inc\ST\STM32F10x-o .\output\obj\task_tcpserver.o --omf_browse .\output\obj\task_tcpserver.crf --depend .\output\obj\task_tcpserver.d)
+F (.\src\task\task_tcpserver.c)(0x5AA5037F)(-c --cpu Cortex-M3 -g -O0 --apcs=interwork -I.\include -I.\src\init -I.\src\ccdebug\inlcude -I.\src\libstm32\cmsis -I.\src\libstm32\inc -I.\src\ucosii\src -I.\src\ucosii\port -I.\src\task -I.\src\HARDWARE\SRAM -I.\src\HARDWARE\TIMER -I.\src\HARDWARE\USART -I.\src\mem -I.\src\collect\include -I.\src\SYSTEM -I.\src\SYSTEM\sys -I.\src\SYSTEM\delay -I.\src\HARDWARE\W5500 -I.\src\Internet\httpServer -I.\src\Internet\PORT -I.\src\webpage-I d:\Keil\ARM\RV31\INC-I d:\Keil\ARM\CMSIS\Include-I d:\Keil\ARM\Inc\ST\STM32F10x-o .\output\obj\task_tcpserver.o --omf_browse .\output\obj\task_tcpserver.crf --depend .\output\obj\task_tcpserver.d)
 I (G:\github\COMMONEMWEB\src\ucosii\src\ucos_ii.h)(0x5A9E64A9)
 I (G:\github\COMMONEMWEB\include\app_cfg.h)(0x5A9E64A9)
 I (G:\github\COMMONEMWEB\include\os_cfg.h)(0x5A9E64A9)
@@ -1443,7 +1443,7 @@ I (G:\github\COMMONEMWEB\src\HARDWARE\W5500\w5500_cfg.h)(0x5A9E64A9)
 I (G:\github\COMMONEMWEB\src\mem\lib_mem.h)(0x5A9E64A9)
 I (d:\Keil\ARM\ARMCC\include\stdlib.h)(0x51C7B744)
 I (G:\github\COMMONEMWEB\src\Internet\httpServer\httpParser.h)(0x5A9E64A9)
-F (.\src\Internet\httpServer\httpServer.c)(0x5AA38C6D)(-c --cpu Cortex-M3 -g -O0 --apcs=interwork -I.\include -I.\src\init -I.\src\ccdebug\inlcude -I.\src\libstm32\cmsis -I.\src\libstm32\inc -I.\src\ucosii\src -I.\src\ucosii\port -I.\src\task -I.\src\HARDWARE\SRAM -I.\src\HARDWARE\TIMER -I.\src\HARDWARE\USART -I.\src\mem -I.\src\collect\include -I.\src\SYSTEM -I.\src\SYSTEM\sys -I.\src\SYSTEM\delay -I.\src\HARDWARE\W5500 -I.\src\Internet\httpServer -I.\src\Internet\PORT -I.\src\webpage-I d:\Keil\ARM\RV31\INC-I d:\Keil\ARM\CMSIS\Include-I d:\Keil\ARM\Inc\ST\STM32F10x-o .\output\obj\httpserver.o --omf_browse .\output\obj\httpserver.crf --depend .\output\obj\httpserver.d)
+F (.\src\Internet\httpServer\httpServer.c)(0x5AA7C897)(-c --cpu Cortex-M3 -g -O0 --apcs=interwork -I.\include -I.\src\init -I.\src\ccdebug\inlcude -I.\src\libstm32\cmsis -I.\src\libstm32\inc -I.\src\ucosii\src -I.\src\ucosii\port -I.\src\task -I.\src\HARDWARE\SRAM -I.\src\HARDWARE\TIMER -I.\src\HARDWARE\USART -I.\src\mem -I.\src\collect\include -I.\src\SYSTEM -I.\src\SYSTEM\sys -I.\src\SYSTEM\delay -I.\src\HARDWARE\W5500 -I.\src\Internet\httpServer -I.\src\Internet\PORT -I.\src\webpage-I d:\Keil\ARM\RV31\INC-I d:\Keil\ARM\CMSIS\Include-I d:\Keil\ARM\Inc\ST\STM32F10x-o .\output\obj\httpserver.o --omf_browse .\output\obj\httpserver.crf --depend .\output\obj\httpserver.d)
 I (G:\github\COMMONEMWEB\src\Internet\httpServer\httpServer.h)(0x5AA12F6D)
 I (d:\Keil\ARM\ARMCC\include\stdint.h)(0x51C7B744)
 I (G:\github\COMMONEMWEB\src\Internet\PORT\socket_port.h)(0x5AA12FD1)
@@ -1484,7 +1484,8 @@ I (d:\Keil\ARM\ARMCC\include\stdlib.h)(0x51C7B744)
 I (d:\Keil\ARM\ARMCC\include\string.h)(0x51C7B744)
 I (G:\github\COMMONEMWEB\src\Internet\httpServer\httpParser.h)(0x5A9E64A9)
 I (G:\github\COMMONEMWEB\src\Internet\httpServer\httpUtil.h)(0x5A9E64A9)
-F (.\src\Internet\httpServer\httpUtil.c)(0x5A9E64A9)(-c --cpu Cortex-M3 -g -O0 --apcs=interwork -I.\include -I.\src\init -I.\src\ccdebug\inlcude -I.\src\libstm32\cmsis -I.\src\libstm32\inc -I.\src\ucosii\src -I.\src\ucosii\port -I.\src\task -I.\src\HARDWARE\SRAM -I.\src\HARDWARE\TIMER -I.\src\HARDWARE\USART -I.\src\mem -I.\src\collect\include -I.\src\SYSTEM -I.\src\SYSTEM\sys -I.\src\SYSTEM\delay -I.\src\HARDWARE\W5500 -I.\src\Internet\httpServer -I.\src\Internet\PORT -I.\src\webpage-I d:\Keil\ARM\RV31\INC-I d:\Keil\ARM\CMSIS\Include-I d:\Keil\ARM\Inc\ST\STM32F10x-o .\output\obj\httputil.o --omf_browse .\output\obj\httputil.crf --depend .\output\obj\httputil.d)
+I (d:\Keil\ARM\ARMCC\include\stdio.h)(0x51C7B744)
+F (.\src\Internet\httpServer\httpUtil.c)(0x5AAB8A19)(-c --cpu Cortex-M3 -g -O0 --apcs=interwork -I.\include -I.\src\init -I.\src\ccdebug\inlcude -I.\src\libstm32\cmsis -I.\src\libstm32\inc -I.\src\ucosii\src -I.\src\ucosii\port -I.\src\task -I.\src\HARDWARE\SRAM -I.\src\HARDWARE\TIMER -I.\src\HARDWARE\USART -I.\src\mem -I.\src\collect\include -I.\src\SYSTEM -I.\src\SYSTEM\sys -I.\src\SYSTEM\delay -I.\src\HARDWARE\W5500 -I.\src\Internet\httpServer -I.\src\Internet\PORT -I.\src\webpage-I d:\Keil\ARM\RV31\INC-I d:\Keil\ARM\CMSIS\Include-I d:\Keil\ARM\Inc\ST\STM32F10x-o .\output\obj\httputil.o --omf_browse .\output\obj\httputil.crf --depend .\output\obj\httputil.d)
 I (d:\Keil\ARM\ARMCC\include\stdio.h)(0x51C7B744)
 I (d:\Keil\ARM\ARMCC\include\string.h)(0x51C7B744)
 I (d:\Keil\ARM\ARMCC\include\stdlib.h)(0x51C7B744)
@@ -1526,6 +1527,7 @@ I (G:\github\COMMONEMWEB\src\SYSTEM\sys\mysys.h)(0x5A9E64A9)
 I (G:\github\COMMONEMWEB\src\HARDWARE\W5500\w5500_cfg.h)(0x5A9E64A9)
 I (G:\github\COMMONEMWEB\src\mem\lib_mem.h)(0x5A9E64A9)
 I (G:\github\COMMONEMWEB\src\Internet\httpServer\httpParser.h)(0x5A9E64A9)
+F (.\src\Internet\httpServer\userhandler.c)(0x5AAB89AB)()
 F (.\src\Internet\PORT\socket_port.c)(0x5AA12FAA)(-c --cpu Cortex-M3 -g -O0 --apcs=interwork -I.\include -I.\src\init -I.\src\ccdebug\inlcude -I.\src\libstm32\cmsis -I.\src\libstm32\inc -I.\src\ucosii\src -I.\src\ucosii\port -I.\src\task -I.\src\HARDWARE\SRAM -I.\src\HARDWARE\TIMER -I.\src\HARDWARE\USART -I.\src\mem -I.\src\collect\include -I.\src\SYSTEM -I.\src\SYSTEM\sys -I.\src\SYSTEM\delay -I.\src\HARDWARE\W5500 -I.\src\Internet\httpServer -I.\src\Internet\PORT -I.\src\webpage-I d:\Keil\ARM\RV31\INC-I d:\Keil\ARM\CMSIS\Include-I d:\Keil\ARM\Inc\ST\STM32F10x-o .\output\obj\socket_port.o --omf_browse .\output\obj\socket_port.crf --depend .\output\obj\socket_port.d)
 I (G:\github\COMMONEMWEB\src\Internet\PORT\socket_port.h)(0x5AA12FD1)
 I (G:\github\COMMONEMWEB\src\libstm32\cmsis\stm32f10x.h)(0x5A9E64A9)

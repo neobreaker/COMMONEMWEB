@@ -26,8 +26,12 @@ void task_tcpserver ( void* p_arg )
 	reg_httpServer_webContent ( ( uint8_t* ) "index.html", ( uint8_t* ) index_page, &cfg );
 
 	// Example #1
-	reg_httpServer_webContent ( ( uint8_t* ) "dio.html", ( uint8_t* ) dio_page,&cfg );				// dio.html 		: Digital I/O control example page
-	reg_httpServer_webContent ( ( uint8_t* ) "dio.js", ( uint8_t* ) wiz550web_dio_js,&cfg );			// dio.js 			: JavaScript for digital I/O control 	(+ ajax.js)
+	reg_httpServer_webContent ( ( uint8_t* ) "dio.html", ( uint8_t* ) dio_page, &cfg );				// dio.html 		: Digital I/O control example page
+	reg_httpServer_webContent ( ( uint8_t* ) "dio.js", ( uint8_t* ) wiz550web_dio_js, &cfg );			// dio.js 			: JavaScript for digital I/O control 	(+ ajax.js)
+
+	// Example #2
+	reg_httpServer_webContent ( ( uint8_t* ) "ain.html", ( uint8_t* ) ain_page ,&cfg);					// ain.html 		: Analog input monitor example page
+	reg_httpServer_webContent ( ( uint8_t* ) "ain.js", ( uint8_t* ) wiz550web_ain_js ,&cfg);
 
 	// AJAX JavaScript functions
 	reg_httpServer_webContent ( ( uint8_t* ) "ajax.js", ( uint8_t* ) wiz550web_ajax_js,&cfg );			// ajax.js			: JavaScript for AJAX request transfer

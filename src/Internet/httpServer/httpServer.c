@@ -24,7 +24,7 @@ httpServer_webContent web_content[MAX_CONTENT_CALLBACK];
 static void http_process_handler ( int s, socket_cfg_t* cfg, st_http_request* p_http_request );
 static void send_http_response_header ( int s, socket_cfg_t* cfg, uint8_t content_type, uint32_t body_len, uint16_t http_status );
 static void send_http_response_body ( int s, socket_cfg_t* cfg, uint8_t* uri_name, uint8_t* buf, uint32_t start_addr, uint32_t file_len );
-static void send_http_response_cgi(uint8_t s, socket_cfg_t* cfg, uint8_t * buf, uint8_t * http_body, uint16_t file_len);
+static void send_http_response_cgi ( uint8_t s, socket_cfg_t* cfg, uint8_t* buf, uint8_t* http_body, uint16_t file_len );
 
 void httpServer_init ( uint8_t* tx_buf, uint8_t* rx_buf )
 {
@@ -57,6 +57,7 @@ void httpServer_run ( int* s, socket_cfg_t* cfg )
 					len = cfg->recvfrom ( *s, ( unsigned int* ) http_request, 1024, 0, &conn_addr, &addr_len );
 					if ( len == 0 )
 					{
+						cfg->close ( *s );
 						return;
 					}
 					else if ( len > DATA_BUF_SIZE )
@@ -203,7 +204,7 @@ static void http_process_handler ( int s, socket_cfg_t* cfg, st_http_request* p_
 				content_found = http_get_cgi_handler ( uri_name, pHTTP_TX, &file_len );
 				if ( content_found && ( file_len <= ( DATA_BUF_SIZE- ( strlen ( RES_CGIHEAD_OK )+8 ) ) ) )
 				{
-					//send_http_response_cgi(s, http_response, pHTTP_TX, (uint16_t)file_len);
+					send_http_response_cgi ( s, cfg, http_response, pHTTP_TX, ( uint16_t ) file_len );
 				}
 				else
 				{
@@ -480,12 +481,12 @@ static void send_http_response_body ( int s, socket_cfg_t* cfg, uint8_t* uri_nam
 
 }
 
-static void send_http_response_cgi(uint8_t s, socket_cfg_t* cfg, uint8_t * buf, uint8_t * http_body, uint16_t file_len)
+static void send_http_response_cgi ( uint8_t s, socket_cfg_t* cfg, uint8_t* buf, uint8_t* http_body, uint16_t file_len )
 {
 	uint16_t send_len = 0;
 
-	send_len = sprintf((char *)buf, "%s%d\r\n\r\n%s", RES_CGIHEAD_OK, file_len, http_body);
+	send_len = sprintf ( ( char* ) buf, "%s%d\r\n\r\n%s", RES_CGIHEAD_OK, file_len, http_body );
 
-	cfg->send(s, buf, send_len, 0);
+	cfg->send ( s, buf, send_len, 0 );
 }
 
