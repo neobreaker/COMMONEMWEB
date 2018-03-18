@@ -14,8 +14,8 @@
 #include <stdlib.h>
 #include "httpUtil.h"
 
-extern uint8_t predefined_get_cgi_processor(uint8_t * uri_name, uint8_t * buf, uint16_t * len);
-extern uint8_t predefined_set_cgi_processor(uint8_t * uri_name, uint8_t * uri, uint8_t * buf, uint16_t * len);
+extern uint8_t predefined_get_cgi_processor ( uint8_t* uri_name, uint8_t* buf, uint16_t* len );
+extern uint8_t predefined_set_cgi_processor ( uint8_t* uri_name, uint8_t* uri, uint8_t* buf, uint16_t* len );
 
 
 uint8_t http_get_cgi_handler ( uint8_t* uri_name, uint8_t* buf, uint32_t* file_len )

@@ -248,6 +248,8 @@ unsigned char W5500_Socket_TCP_Connect(SOCKET s);
 int Write_SOCK_Data_Buffer(SOCKET s, unsigned char *dat_ptr, unsigned short size, unsigned char *dst_ip, unsigned short dst_port);
 unsigned short Read_SOCK_Data_Buffer(SOCKET s, unsigned char *dat_ptr, u32* remote_ip, u16* remote_port);
 
+unsigned char Read_W5500_1Byte(w5500_cfg_t *cfg, unsigned short reg);
+
 u8 getSn_SR(int s);
 uint16_t getSn_RX_RSR(uint8_t s);
 u8 setSn_CR(int s, u8 dat);

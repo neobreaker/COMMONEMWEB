@@ -3,6 +3,7 @@
 #include "httpUtil.h"
 #include <string.h>
 #include <stdio.h>
+#include "ff.h"
 
 #ifndef DATA_BUF_SIZE
 #define DATA_BUF_SIZE       2048
@@ -12,11 +13,15 @@ static st_http_request* http_request;               /**< Pointer to received HTT
 static st_http_request* parsed_http_request;        /**< Pointer to parsed HTTP request */
 static uint8_t* http_response;                      /**< Pointer to HTTP response */
 
+static FIL s_file;
+
 // Number of registered web content in code flash memory
 static uint16_t total_content_cnt = 0;
 
 uint8_t* pHTTP_TX;
 uint8_t* pHTTP_RX;
+
+extern FATFS fs;
 
 st_http_socket HTTPSock_Status[SOCK_NUM] = { {STATE_HTTP_IDLE, }, };
 httpServer_webContent web_content[MAX_CONTENT_CALLBACK];
@@ -103,6 +108,10 @@ void httpServer_run ( int* s, socket_cfg_t* cfg )
 					HTTPSock_Status[*s].file_start = 0;
 					HTTPSock_Status[*s].sock_status = STATE_HTTP_IDLE;
 
+					if ( HTTPSock_Status[*s].storage_type == SDCARD )
+					{
+						f_close ( &s_file );
+					}
 
 					cfg->disconnect ( *s );
 					break;
@@ -167,6 +176,8 @@ static void http_process_handler ( int s, socket_cfg_t* cfg, st_http_request* p_
 	uint16_t http_status;
 	uint8_t content_found;
 
+	FRESULT fr;
+
 	http_status = 0;
 	http_response = pHTTP_RX;
 	file_len = 0;
@@ -221,6 +232,14 @@ static void http_process_handler ( int s, socket_cfg_t* cfg, st_http_request* p_
 					HTTPSock_Status[s].storage_type = CODEFLASH;
 				}
 				// Not CGI request, Web content in 'SD card' or 'Data flash' requested
+				else if ( ( fr = f_open ( &s_file, ( const char* ) uri_name, FA_READ ) ) == 0 )
+				{
+					content_found = 1; // file open succeed
+
+					file_len = s_file.fsize;
+					content_addr = s_file.sclust;
+					HTTPSock_Status[s].storage_type = SDCARD;
+				}
 				else
 				{
 					content_found = 0; // fail to find content
@@ -396,6 +415,8 @@ static void send_http_response_body ( int s, socket_cfg_t* cfg, uint8_t* uri_nam
 
 	uint8_t flag_datasend_end = 0;
 
+	FRESULT fr;
+	uint16_t blocklen;
 
 	if ( s == -1 )
 	{
@@ -452,6 +473,19 @@ static void send_http_response_body ( int s, socket_cfg_t* cfg, uint8_t* uri_nam
 		}
 		read_userReg_webContent ( start_addr, &buf[0], HTTPSock_Status[s].file_offset, send_len );
 	}
+	else if ( HTTPSock_Status[s].storage_type == SDCARD )
+	{
+		// Data read from SD Card
+		fr = f_read ( &s_file, &buf[0], send_len, ( void* ) &blocklen );
+		if ( fr != FR_OK )
+		{
+			send_len = 0;
+		}
+		else
+		{
+			* ( buf+send_len+1 ) = 0; // Insert '/0' for indicates the 'End of String' (null terminated)
+		}
+	}
 	else
 	{
 		send_len = 0;
@@ -473,6 +507,7 @@ static void send_http_response_body ( int s, socket_cfg_t* cfg, uint8_t* uri_nam
 		HTTPSock_Status[s].file_len = 0;
 		HTTPSock_Status[s].file_offset = 0;
 		flag_datasend_end = 0;
+
 	}
 	else
 	{

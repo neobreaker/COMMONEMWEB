@@ -11,6 +11,7 @@
 //#include "vs10xx_port.h"
 //#include "vs10xx_play_port.h"
 #include "w5500_port.h"
+#include "ff.h"
 
 static OS_STK startup_task_stk[STARTUP_TASK_STK_SIZE];
 
@@ -25,6 +26,7 @@ OS_EVENT* sem_w5500_dma;
 
 w5500_cfg_t g_w5500_cfg;
 netchard_dev_t g_netchard_dev;
+FATFS fs;
 
 void load_netcard_dev()
 {
@@ -53,6 +55,11 @@ void load_netcard_dev()
 
 void bsp_init()
 {
+	FIL file;
+	FRESULT res;
+	UINT *bw;
+	u8 buf[50];
+	
 	NVIC_Configuration();
 	delay_init();
 	FSMC_SRAM_Init();
@@ -64,6 +71,25 @@ void bsp_init()
 	load_netcard_dev();
 	W5500_Hardware_Reset ( &g_w5500_cfg );
 	W5500_Init ( &g_w5500_cfg, &g_netchard_dev );
+
+	//SD_Init();
+
+	res = f_mount ( &fs, "0:" , 1 ); 					//π“‘ÿSDø®
+
+	res = f_open(&file, "0:/neo.txt", FA_CREATE_ALWAYS | FA_WRITE);
+
+	res = f_write(&file, "hello fatfs asdfghv", 20, bw);
+
+	res = f_close(&file);
+
+	res = f_open(&file, "0:/neo.txt", FA_READ);
+
+	res = f_read(&file, buf, 10, bw);
+	res = f_read(&file, buf, 10, bw);
+	res = f_read(&file, buf, 10, bw);
+	
+	res = f_close(&file);
+	
 }
 
 int main ( void )

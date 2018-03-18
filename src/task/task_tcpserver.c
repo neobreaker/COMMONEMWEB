@@ -6,9 +6,14 @@
 #include "httpServer.h"
 #include "lib_mem.h"
 #include "webpage.h"
+#include "w5500_port.h"
 
 static u8* tx_buffer;
 static u8* rx_buffer;
+
+extern w5500_cfg_t g_w5500_cfg;
+
+static u8 mr;
 
 void task_tcpserver ( void* p_arg )
 {
@@ -39,6 +44,7 @@ void task_tcpserver ( void* p_arg )
 
 	while ( 1 )
 	{
+		//mr = Read_W5500_1Byte(&g_w5500_cfg, MR);
 		httpServer_run ( &s, &cfg );
 	}
 }
