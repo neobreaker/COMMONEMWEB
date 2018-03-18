@@ -351,7 +351,7 @@
               <MiscControls></MiscControls>
               <Define></Define>
               <Undefine></Undefine>
-              <IncludePath>.\include;.\src\init;.\src\ccdebug\inlcude;.\src\libstm32\cmsis;.\src\libstm32\inc;.\src\ucosii\src;.\src\ucosii\port;.\src\task;.\src\HARDWARE\SRAM;.\src\HARDWARE\TIMER;.\src\HARDWARE\USART;.\src\mem;.\src\collect\include;.\src\SYSTEM;.\src\SYSTEM\sys;.\src\SYSTEM\delay;.\src\HARDWARE\W5500;.\src\Internet\httpServer;.\src\Internet\PORT;.\src\webpage</IncludePath>
+              <IncludePath>.\include;.\src\init;.\src\ccdebug\inlcude;.\src\libstm32\cmsis;.\src\libstm32\inc;.\src\ucosii\src;.\src\ucosii\port;.\src\task;.\src\HARDWARE\SRAM;.\src\HARDWARE\TIMER;.\src\HARDWARE\USART;.\src\HARDWARE\SDIO;.\src\mem;.\src\collect\include;.\src\SYSTEM;.\src\SYSTEM\sys;.\src\SYSTEM\delay;.\src\HARDWARE\W5500;.\src\Internet\httpServer;.\src\Internet\PORT;.\src\webpage;.\src\FATFS\src;.\src\FATFS\src\option</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -577,6 +577,11 @@
               <FileType>1</FileType>
               <FilePath>.\src\HARDWARE\W5500\w5500_socket.c</FilePath>
             </File>
+            <File>
+              <FileName>sdio_sdcard.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\HARDWARE\SDIO\sdio_sdcard.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -796,6 +801,26 @@
               <FileName>socket_port.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\src\Internet\PORT\socket_port.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Fatfs</GroupName>
+          <Files>
+            <File>
+              <FileName>ff.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\FATFS\src\ff.c</FilePath>
+            </File>
+            <File>
+              <FileName>diskio.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\FATFS\src\diskio.c</FilePath>
+            </File>
+            <File>
+              <FileName>cc936.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\FATFS\src\option\cc936.c</FilePath>
             </File>
           </Files>
         </Group>
