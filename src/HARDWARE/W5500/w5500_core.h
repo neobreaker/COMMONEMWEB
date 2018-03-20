@@ -253,6 +253,8 @@ unsigned char Read_W5500_1Byte(w5500_cfg_t *cfg, unsigned short reg);
 u8 getSn_SR(int s);
 uint16_t getSn_RX_RSR(uint8_t s);
 u8 setSn_CR(int s, u8 dat);
+u8 setSn_DIPR(int s, u8* dat);
+u8 setSn_DPORTR(int s, u16 dat);
 
 void W5500_Interrupt_Process(void);
 #endif

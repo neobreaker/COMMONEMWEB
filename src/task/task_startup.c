@@ -3,16 +3,12 @@
 #include "task_startup.h"
 
 static OS_STK task_tcpserver_stk[TASK_TCPSERVER_STK_SIZE];
-//static OS_STK task_udpserver_stk[TASK_UDPSERVER_STK_SIZE];
-//static OS_STK task_udpclient_stk[TASK_UDPCLIENT_STK_SIZE];
-//static OS_STK task_play_stk[TASK_PLAY_STK_SIZE];
 static OS_STK task_socket_stk[TASK_SOCKET_STK_SIZE];
+//static OS_STK task_ftpd_stk[TASK_FTPD_STK_SIZE];
 
 extern void task_tcpserver(void *p_arg);
-extern void task_udpserver(void *p_arg);
-extern void task_udpclient(void *p_arg);
-extern void task_play(void *p_arg);
 extern void task_socket(void *p_arg);
+//extern void task_ftpd ( void* p_arg );
 
 static void systick_init(void)
 {
@@ -39,14 +35,8 @@ void startup_task(void *p_arg)
 	err |= OSTaskCreate(task_socket, (void *)0,
                         &task_socket_stk[TASK_SOCKET_STK_SIZE-1], TASK_SOCKET_PRIO);
 /*
-    err |= OSTaskCreate(task_play, (void *)0,
-                       &task_play_stk[TASK_PLAY_STK_SIZE-1], TASK_PLAY_PRIO);
-   
-    err |= OSTaskCreate(task_udpserver, (void *)0,
-                        &task_udpserver_stk[TASK_UDPSERVER_STK_SIZE-1], TASK_UDPSERVER_PRIO);
-
-	err |= OSTaskCreate(task_udpclient, (void *)0,
-                        &task_udpclient_stk[TASK_UDPCLIENT_STK_SIZE-1], TASK_UDPCLIENT_PRIO);
+	err |= OSTaskCreate(task_ftpd, (void *)0,
+                       &task_ftpd_stk[TASK_FTPD_STK_SIZE-1], TASK_FTPD_PRIO);
 */
     if (OS_ERR_NONE != err)
         while(1)

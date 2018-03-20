@@ -10,7 +10,7 @@ typedef struct
 	int (*socket)(int domain, int type, int protocol);
 	int (*bind)(int s, const struct sockaddr_in *name, socklen_t namelen);
 	int (*listen)(int s, int backlog);
-	int (*connect)(int s, const struct sockaddr *name, socklen_t namelen);
+	int (*connect)(int s, const struct sockaddr_in *name, socklen_t namelen);
 	int (*sendto)(int s, const void *data, u32 size, int flags,
 	    const struct sockaddr_in *to, socklen_t tolen);
 	int (*send)(int s, const void *data, u32 size, int flags);

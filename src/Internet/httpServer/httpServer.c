@@ -41,6 +41,7 @@ void httpServer_init ( uint8_t* tx_buf, uint8_t* rx_buf )
 void httpServer_run ( int* s, socket_cfg_t* cfg )
 {
 	int err;
+	u8 sock_sta;
 	uint16_t len;
 	uint32_t gettime = 0;
 	socklen_t addr_len;
@@ -49,9 +50,12 @@ void httpServer_run ( int* s, socket_cfg_t* cfg )
 	http_request = ( st_http_request* ) pHTTP_RX;   // Structure of HTTP Request
 	parsed_http_request = ( st_http_request* ) pHTTP_TX;
 
+	sock_sta = cfg->socket_status ( *s );
 	/* HTTP Service Start */
-	switch ( cfg->socket_status ( *s ) )
+	switch ( sock_sta )
 	{
+		case SOCK_LISTEN:
+			//go down through
 		case SOCK_ESTABLISHED:
 
 			// HTTP Process states
@@ -62,7 +66,8 @@ void httpServer_run ( int* s, socket_cfg_t* cfg )
 					len = cfg->recvfrom ( *s, ( unsigned int* ) http_request, 1024, 0, &conn_addr, &addr_len );
 					if ( len == 0 )
 					{
-						cfg->close ( *s );
+						if(sock_sta == SOCK_ESTABLISHED)
+							cfg->close ( *s );
 						return;
 					}
 					else if ( len > DATA_BUF_SIZE )
@@ -152,9 +157,6 @@ void httpServer_run ( int* s, socket_cfg_t* cfg )
 			{
 				return ;
 			}
-			break;
-
-		case SOCK_LISTEN:
 			break;
 
 		default :

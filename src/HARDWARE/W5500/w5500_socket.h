@@ -80,7 +80,7 @@ int send(int s, const void *data, u32 size, int flags);
 int recvfrom(int s, void *mem, u32 len, int flags, struct 
 			sockaddr_in *from, socklen_t *fromlen);
 int listen(int s, int backlog);
-int connect(int s, const struct sockaddr *name, socklen_t namelen);
+int connect(int s, const struct sockaddr_in *name, socklen_t namelen);
 u8 socket_status(int s);
 int8_t disconnect(int s);
 int8_t close(int s);

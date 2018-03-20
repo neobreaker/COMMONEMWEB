@@ -13,8 +13,6 @@ static u8* rx_buffer;
 
 extern w5500_cfg_t g_w5500_cfg;
 
-static u8 mr;
-
 void task_tcpserver ( void* p_arg )
 {
 	int s = -1;
@@ -44,7 +42,6 @@ void task_tcpserver ( void* p_arg )
 
 	while ( 1 )
 	{
-		//mr = Read_W5500_1Byte(&g_w5500_cfg, MR);
 		httpServer_run ( &s, &cfg );
 	}
 }

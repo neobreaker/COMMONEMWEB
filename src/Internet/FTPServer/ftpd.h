@@ -13,15 +13,16 @@
 */
 
 #include <stdint.h>
+#include "socket_port.h"
 
-//#define F_FILESYSTEM // If your target support a file system, you have to activate this feature and implement.
+#define F_FILESYSTEM // If your target support a file system, you have to activate this feature and implement.
 
 #if defined(F_FILESYSTEM)
 #include "ff.h"
 #endif
 
 #define F_APP_FTP
-#define _FTP_DEBUG_
+//#define _FTP_DEBUG_
 
 
 #define LINELEN		100
@@ -29,9 +30,6 @@
 #if !defined(F_FILESYSTEM)
 #define _MAX_SS		512
 #endif
-
-#define CTRL_SOCK	2
-#define DATA_SOCK	3
 
 #define	IPPORT_FTPD	20	/* FTP Data port */
 #define	IPPORT_FTP	21	/* FTP Control port */
@@ -127,10 +125,10 @@ typedef union _un_l2cval {
 }un_l2cval;
 #endif
 
-void ftpd_init(uint8_t * src_ip);
-uint8_t ftpd_run(uint8_t * dbuf);
-char proc_ftpd(char * buf);
-char ftplogin(char * pass);
+void ftpd_init ( uint8_t* src_ip, socket_cfg_t* cfg );
+int ftpd_run ( uint8_t* dbuf, socket_cfg_t* cfg );
+char proc_ftpd ( char* buf , socket_cfg_t* cfg);
+char ftplogin ( char* pass ,socket_cfg_t* cfg);
 int pport(char * arg);
 
 int sendit(char * command);
@@ -143,3 +141,4 @@ long recvfile(uint8_t s);
 void print_filedsc(FIL *fil);
 #endif
 #endif // _FTPD_H_
+

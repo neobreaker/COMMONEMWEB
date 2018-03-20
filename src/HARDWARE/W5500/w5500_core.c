@@ -414,6 +414,32 @@ u8 setSn_CR(int s, u8 dat)
     return 0;
 }
 
+u8 setSn_DIPR(int s, u8* dat)
+{
+    u8 err;
+    OSSemPend(sem_w5500, 0, &err);
+    if(err == OS_ERR_NONE)
+    {
+        Write_W5500_SOCK_4Byte(s_w5500_cfgp, s, Sn_DIPR, dat);
+    }
+    OSSemPost(sem_w5500);
+
+    return 0;
+}
+
+u8 setSn_DPORTR(int s, u16 dat)
+{
+    u8 err;
+    OSSemPend(sem_w5500, 0, &err);
+    if(err == OS_ERR_NONE)
+    {
+		Write_W5500_SOCK_2Byte(s_w5500_cfgp, s, Sn_DPORTR, dat);
+    }
+    OSSemPost(sem_w5500);
+
+    return 0;
+}
+
 //static u32 time_stamp = 0, time_elapse = 0;
 int write_tx_buffer(SOCKET s, unsigned char *data, unsigned short offset, unsigned short len)
 {

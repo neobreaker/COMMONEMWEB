@@ -78,8 +78,11 @@ int listen(int s, int backlog)
 	return W5500_Socket_TCP_Listen(s);
 }
 
-int connect(int s, const struct sockaddr *name, socklen_t namelen)
+int connect(int s, const struct sockaddr_in *name, socklen_t namelen)
 {
+	setSn_DIPR(s, (u8*)&(name->sin_addr));
+	setSn_DPORTR(s, name->sin_port);
+	
 	return W5500_Socket_TCP_Connect(s);
 }
 

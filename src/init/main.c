@@ -8,21 +8,14 @@
 #include "array.h"
 #include "delay.h"
 #include "ccdebug.h"
-//#include "vs10xx_port.h"
-//#include "vs10xx_play_port.h"
 #include "w5500_port.h"
 #include "ff.h"
 
 static OS_STK startup_task_stk[STARTUP_TASK_STK_SIZE];
 
-//OS_EVENT* sem_vs1053async;          //TEST
-//OS_EVENT* sem_vs1053_play_async;
 OS_EVENT* mbox_sock_rcv[W5500_SOCKET_NUM];
 OS_EVENT* sem_w5500;
 OS_EVENT* sem_w5500_dma;
-
-//vs10xx_cfg_t g_vs10xx_rec_cfg;
-//vs10xx_cfg_t g_vs10xx_play_cfg;
 
 w5500_cfg_t g_w5500_cfg;
 netchard_dev_t g_netchard_dev;
@@ -55,41 +48,14 @@ void load_netcard_dev()
 
 void bsp_init()
 {
-	FIL file;
-	FRESULT res;
-	UINT *bw;
-	u8 buf[50];
-	
 	NVIC_Configuration();
 	delay_init();
 	FSMC_SRAM_Init();
 	ccdebug_port_init ( 9600 );
-//    vs10xx_cfg_setup(&g_vs10xx_rec_cfg);
-//    vs10xx_play_cfg_setup(&g_vs10xx_play_cfg);
-
 	w5500_cfg_setup ( &g_w5500_cfg );
 	load_netcard_dev();
 	W5500_Hardware_Reset ( &g_w5500_cfg );
 	W5500_Init ( &g_w5500_cfg, &g_netchard_dev );
-
-	//SD_Init();
-
-	res = f_mount ( &fs, "0:" , 1 ); 					//π“‘ÿSDø®
-
-	res = f_open(&file, "0:/neo.txt", FA_CREATE_ALWAYS | FA_WRITE);
-
-	res = f_write(&file, "hello fatfs asdfghv", 20, bw);
-
-	res = f_close(&file);
-
-	res = f_open(&file, "0:/neo.txt", FA_READ);
-
-	res = f_read(&file, buf, 10, bw);
-	res = f_read(&file, buf, 10, bw);
-	res = f_read(&file, buf, 10, bw);
-	
-	res = f_close(&file);
-	
 }
 
 int main ( void )
@@ -102,10 +68,7 @@ int main ( void )
 	OSInit();
 
 	CC_DEBUGF ( CC_DBG_ON | CC_DBG_LEVEL_WARNING, "system booting\n" );
-	/*
-	    sem_vs1053async         = OSSemCreate(0);
-	    sem_vs1053_play_async   = OSSemCreate(0);
-	*/
+	
 	sem_w5500				= OSSemCreate ( 1 );
 	sem_w5500_dma			= OSSemCreate ( 0 );
 
