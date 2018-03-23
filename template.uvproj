@@ -47,7 +47,7 @@
           <OutputName>template</OutputName>
           <CreateExecutable>1</CreateExecutable>
           <CreateLib>0</CreateLib>
-          <CreateHexFile>0</CreateHexFile>
+          <CreateHexFile>1</CreateHexFile>
           <DebugInformation>1</DebugInformation>
           <BrowseInformation>1</BrowseInformation>
           <ListingPath>.\output\list\</ListingPath>
@@ -73,9 +73,9 @@
             <UserProg2Dos16Mode>0</UserProg2Dos16Mode>
           </BeforeMake>
           <AfterMake>
-            <RunUserProg1>0</RunUserProg1>
+            <RunUserProg1>1</RunUserProg1>
             <RunUserProg2>0</RunUserProg2>
-            <UserProg1Name></UserProg1Name>
+            <UserProg1Name>D:\Keil\ARM\ARMCC\bin\fromelf.exe --bin -o  ./Output/@L.bin  ./Output/Obj/@L.axf</UserProg1Name>
             <UserProg2Name></UserProg2Name>
             <UserProg1Dos16Mode>0</UserProg1Dos16Mode>
             <UserProg2Dos16Mode>0</UserProg2Dos16Mode>
@@ -351,7 +351,7 @@
               <MiscControls></MiscControls>
               <Define></Define>
               <Undefine></Undefine>
-              <IncludePath>.\include;.\src\init;.\src\ccdebug\inlcude;.\src\libstm32\cmsis;.\src\libstm32\inc;.\src\ucosii\src;.\src\ucosii\port;.\src\task;.\src\HARDWARE\SRAM;.\src\HARDWARE\TIMER;.\src\HARDWARE\USART;.\src\HARDWARE\SDIO;.\src\mem;.\src\collect\include;.\src\SYSTEM;.\src\SYSTEM\sys;.\src\SYSTEM\delay;.\src\HARDWARE\W5500;.\src\Internet\httpServer;.\src\Internet\PORT;.\src\webpage;.\src\FATFS\src;.\src\FATFS\src\option</IncludePath>
+              <IncludePath>.\include;.\src\init;.\src\ccdebug\inlcude;.\src\libstm32\cmsis;.\src\libstm32\inc;.\src\ucosii\src;.\src\ucosii\port;.\src\task;.\src\HARDWARE\SRAM;.\src\HARDWARE\TIMER;.\src\HARDWARE\USART;.\src\HARDWARE\SDIO;.\src\mem;.\src\SYSTEM;.\src\SYSTEM\sys;.\src\SYSTEM\delay;.\src\HARDWARE\W5500;.\src\Internet\httpServer;.\src\Internet\PORT;.\src\webpage;.\src\FATFS\src;.\src\FATFS\src\option</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -685,66 +685,6 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>Collect</GroupName>
-          <Files>
-            <File>
-              <FileName>array.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\src\collect\array.c</FilePath>
-            </File>
-            <File>
-              <FileName>common.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\src\collect\common.c</FilePath>
-            </File>
-            <File>
-              <FileName>deque.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\src\collect\deque.c</FilePath>
-            </File>
-            <File>
-              <FileName>hashset.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\src\collect\hashset.c</FilePath>
-            </File>
-            <File>
-              <FileName>hashtable.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\src\collect\hashtable.c</FilePath>
-            </File>
-            <File>
-              <FileName>list.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\src\collect\list.c</FilePath>
-            </File>
-            <File>
-              <FileName>queue.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\src\collect\queue.c</FilePath>
-            </File>
-            <File>
-              <FileName>slist.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\src\collect\slist.c</FilePath>
-            </File>
-            <File>
-              <FileName>stack.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\src\collect\stack.c</FilePath>
-            </File>
-            <File>
-              <FileName>treeset.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\src\collect\treeset.c</FilePath>
-            </File>
-            <File>
-              <FileName>treetable.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\src\collect\treetable.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
           <GroupName>SYSTEM</GroupName>
           <Files>
             <File>
@@ -818,9 +758,9 @@
               <FilePath>.\src\FATFS\src\diskio.c</FilePath>
             </File>
             <File>
-              <FileName>cc936.c</FileName>
+              <FileName>mycc936.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\src\FATFS\src\option\cc936.c</FilePath>
+              <FilePath>.\src\FATFS\src\option\mycc936.c</FilePath>
             </File>
           </Files>
         </Group>

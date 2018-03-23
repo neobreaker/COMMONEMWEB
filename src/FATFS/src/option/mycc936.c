@@ -1,5 +1,5 @@
 #include "ff.h"
-#include "sys.h"
+#include "mysys.h"
 
 //这里需要大约512字节左右的内存.
 //当内存不足的时候,可以使用指针方式,以节省部分内存
@@ -9,7 +9,7 @@
   
 FIL UK_FILE;	  
 u8 UK_FLAG=0;   									//标记是否打开了UNIGBK.BIN	 
-const u8 *UNIGBK_PATH="1:/SYSTEM/FONT/UNIGBK.BIN"; 	//UNIGBK  存放路径
+const u8 *UNIGBK_PATH="0:/SYSTEM/FONT/UNIGBK.BIN"; 	//UNIGBK  存放路径
 
 
 WCHAR ff_convert (	/* Converted code, 0 means conversion error */

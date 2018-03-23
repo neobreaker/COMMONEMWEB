@@ -5,7 +5,6 @@
 #include "sram.h"
 #include "stdio.h"
 #include "lib_mem.h"
-#include "array.h"
 #include "delay.h"
 #include "ccdebug.h"
 #include "w5500_port.h"
@@ -48,6 +47,7 @@ void load_netcard_dev()
 
 void bsp_init()
 {
+	
 	NVIC_Configuration();
 	delay_init();
 	FSMC_SRAM_Init();
@@ -56,6 +56,7 @@ void bsp_init()
 	load_netcard_dev();
 	W5500_Hardware_Reset ( &g_w5500_cfg );
 	W5500_Init ( &g_w5500_cfg, &g_netchard_dev );
+	f_mount ( &fs, "0:" , 1 ); 	
 }
 
 int main ( void )

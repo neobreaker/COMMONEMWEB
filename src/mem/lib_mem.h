@@ -11,4 +11,5 @@ void pvPortMemDeinit(void);
 size_t xPortGetFreeHeapSize( void );
 
 
+int pvTest(void);
 #endif

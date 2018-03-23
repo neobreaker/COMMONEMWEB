@@ -135,24 +135,32 @@ u8 socket_status(int s)
 
 int8_t disconnect(int s)
 {
+	int cnt = 0;
     setSn_CR(s, DISCON);
 
     /* wait to process the command... */
-    //while(getSn_CR(sn));
+    while(getSn_CR(s)&& cnt < 200)
+	{
+		cnt++;
+	}
     s_socket_usage &= ~(1<<s);
     return 0;
 }
 
 int8_t close(int s)
 {
+	int cnt = 0;
 	disconnect(s);
     
 	setSn_CR(s, CLOSE);
     /* wait to process the command... */
-	//while( getSn_CR(sn) );
+	while( getSn_CR(s) );
 	/* clear all interrupt of the socket. */
-	//setSn_IR(sn, 0xFF);
-	//while(getSn_SR(sn) != SOCK_CLOSED);
+	//setSn_IR(s, 0xFF);
+	while(getSn_SR(s) != SOCK_CLOSED && cnt < 200)
+	{
+		cnt++;
+	}
 	return 0;
 }
 

@@ -401,6 +401,25 @@ uint16_t getSn_RX_RSR(uint8_t s)
     return ret;
 }
 
+u8 getSn_CR(int s)
+{
+    u8 err;
+    u8 ret;
+
+    if(s < 0 || s > W5500_SOCKET_NUM)
+        return SOCK_CLOSED;
+    
+    OSSemPend(sem_w5500, 0, &err);
+    if(err == OS_ERR_NONE)
+    {
+        ret = Read_W5500_SOCK_1Byte(s_w5500_cfgp, s, Sn_CR);
+    }
+    OSSemPost(sem_w5500);
+
+    return ret;
+}
+
+
 u8 setSn_CR(int s, u8 dat)
 {
     u8 err;
@@ -408,6 +427,19 @@ u8 setSn_CR(int s, u8 dat)
     if(err == OS_ERR_NONE)
     {
         Write_W5500_SOCK_1Byte(s_w5500_cfgp, s, Sn_CR, dat);//发送主动断开连接命令
+    }
+    OSSemPost(sem_w5500);
+
+    return 0;
+}
+
+u8 setSn_IR(int s, u8 dat)
+{
+    u8 err;
+    OSSemPend(sem_w5500, 0, &err);
+    if(err == OS_ERR_NONE)
+    {
+        Write_W5500_SOCK_1Byte(s_w5500_cfgp, s, Sn_IR, dat);//发送主动断开连接命令
     }
     OSSemPost(sem_w5500);
 

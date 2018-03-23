@@ -55,7 +55,7 @@ void httpServer_run ( int* s, socket_cfg_t* cfg )
 	switch ( sock_sta )
 	{
 		case SOCK_LISTEN:
-			//go down through
+		//go down through
 		case SOCK_ESTABLISHED:
 
 			// HTTP Process states
@@ -66,8 +66,10 @@ void httpServer_run ( int* s, socket_cfg_t* cfg )
 					len = cfg->recvfrom ( *s, ( unsigned int* ) http_request, 1024, 0, &conn_addr, &addr_len );
 					if ( len == 0 )
 					{
-						if(sock_sta == SOCK_ESTABLISHED)
+						if ( sock_sta == SOCK_ESTABLISHED )
+						{
 							cfg->close ( *s );
+						}
 						return;
 					}
 					else if ( len > DATA_BUF_SIZE )
@@ -118,7 +120,11 @@ void httpServer_run ( int* s, socket_cfg_t* cfg )
 						f_close ( &s_file );
 					}
 
+					
 					cfg->disconnect ( *s );
+					*s = -1;
+					
+					
 					break;
 
 				default :
@@ -130,10 +136,20 @@ void httpServer_run ( int* s, socket_cfg_t* cfg )
 		case SOCK_CLOSE_WAIT:
 
 			cfg->close ( *s );
+			*s = -1;
 			break;
 
 		case SOCK_CLOSED:
-			//socket(s, Sn_MR_TCP, HTTP_SERVER_PORT, 0x00) == s);    /* Reinitialize the socket */
+			if(s_file.fs != 0)
+			{
+				f_close(&s_file);
+			}
+
+			if(*s >= 0)
+			{
+				cfg->close ( *s );
+			}
+			
 			*s = cfg->socket ( AF_INET, SOCK_STREAM, 0 );
 			if ( *s == -1 )
 			{
@@ -234,17 +250,21 @@ static void http_process_handler ( int s, socket_cfg_t* cfg, st_http_request* p_
 					HTTPSock_Status[s].storage_type = CODEFLASH;
 				}
 				// Not CGI request, Web content in 'SD card' or 'Data flash' requested
-				else if ( ( fr = f_open ( &s_file, ( const char* ) uri_name, FA_READ ) ) == 0 )
-				{
-					content_found = 1; // file open succeed
-
-					file_len = s_file.fsize;
-					content_addr = s_file.sclust;
-					HTTPSock_Status[s].storage_type = SDCARD;
-				}
 				else
 				{
-					content_found = 0; // fail to find content
+					
+					if ( ( fr = f_open ( &s_file, ( const char* ) uri_name, FA_READ ) ) == 0 )
+					{
+						content_found = 1; // file open succeed
+
+						file_len = s_file.fsize;
+						content_addr = s_file.sclust;
+						HTTPSock_Status[s].storage_type = SDCARD;
+					}
+					else
+					{
+						content_found = 0; // fail to find content
+					}
 				}
 
 				if ( !content_found )

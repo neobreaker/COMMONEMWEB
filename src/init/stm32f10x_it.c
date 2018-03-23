@@ -53,6 +53,13 @@ void NMI_Handler(void)
   * @param  None
   * @retval None
   */
+__asm void wait()
+{       
+
+	BX lr
+
+}
+
 void HardFault_Handler(void)
 {
   /* Go to infinite loop when Hard Fault exception occurs */

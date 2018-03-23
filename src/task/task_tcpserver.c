@@ -16,12 +16,22 @@ extern w5500_cfg_t g_w5500_cfg;
 void task_tcpserver ( void* p_arg )
 {
 	int s = -1;
+	
+	
+	int i = 0;
+	u8 *p = NULL;
 
 	socket_cfg_t cfg;
 
-	tx_buffer = pvPortMalloc ( 1024 );
-	rx_buffer = pvPortMalloc ( 1024 );
+	tx_buffer = pvPortMalloc ( 2048 );
+	rx_buffer = pvPortMalloc ( 2048 );
+	if(!tx_buffer || !rx_buffer)
+		return;
 
+	i = pvTest();
+	if(i)
+		i = 0;
+	
 	socket_cfg_init ( &cfg );
 
 	httpServer_init ( tx_buffer, rx_buffer );
